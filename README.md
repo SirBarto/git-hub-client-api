@@ -14,6 +14,7 @@ GET https://git-hub-client-api.herokuapp.com/repositories/{owner}?sort=stars,des
 
 Example:
 
+```json
 [
     {
         "fullName": "octocat/test-repo1",
@@ -32,7 +33,7 @@ Example:
         "createdAt": "2018-05-10T17:51:29Z"
     }
 ]
-
+```
 -------------
 Futher issue list
 
