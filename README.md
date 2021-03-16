@@ -12,6 +12,27 @@ GET https://git-hub-client-api.herokuapp.com/repositories/{owner}?sort=stars,asc
 
 GET https://git-hub-client-api.herokuapp.com/repositories/{owner}?sort=stars,desc  --> Z - A
 
+Example:
+
+[
+    {
+        "fullName": "octocat/test-repo1",
+        "description": "null",
+        "cloneUrl": "https://github.com/octocat/test-repo1.git",
+        "stars": 6,
+        "watchers": 6,
+        "createdAt": "2016-04-14T21:29:25Z"
+    },
+    {
+        "fullName": "octocat/boysenberry-repo-1",
+        "description": "Testing",
+        "cloneUrl": "https://github.com/octocat/boysenberry-repo-1.git",
+        "stars": 9,
+        "watchers": 9,
+        "createdAt": "2018-05-10T17:51:29Z"
+    }
+]
+
 -------------
 Futher issue list
 
