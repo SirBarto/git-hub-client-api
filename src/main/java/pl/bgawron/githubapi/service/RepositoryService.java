@@ -3,24 +3,16 @@ package pl.bgawron.githubapi.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.jndi.toolkit.url.Uri;
-import org.apache.commons.logging.Log;
-import org.apache.coyote.Response;
-import org.apache.http.HttpResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import pl.bgawron.githubapi.model.Repository;
-import sun.awt.image.ImageWatched;
 
-import java.lang.Object;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.ws.spi.http.HttpContext;
 import java.util.*;
-import java.util.concurrent.Future;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,12 +24,12 @@ public class RepositoryService {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
+    int pageNumber=1, page=1;
+
     public List<Repository> getAllRepoByUser(String owner, String sort) throws JsonProcessingException
     {
-        int pageNumber=1, page=10;
+        page= pagePagination(owner);
         repositoryList.clear();
-
-        //methond get header
 
         while(pageNumber<=page)
         {
@@ -116,43 +108,40 @@ public class RepositoryService {
     @Nullable
     private String gitHubEndPoint(String owner, int page)
     {
-        final String GITHUB_API_URL = "https://api.github.com/users/{owner}/repos?per_page=2&page={page}";
-        ResponseEntity<JsonNode> responseEntity = restTemplate.getForEntity(GITHUB_API_URL, JsonNode.class, owner, page);
-        HttpHeaders headers = responseEntity.getHeaders();
-        String rel = headers.getFirst("Link");
-        System.out.println(headers.getFirst("Link"));
-        String[] path1 = rel.split(",");
-        for(int k=0; k<path1.length; k++){
-            if(path1[k].contains("last")){
-                System.out.println(path1[k]);
-                String ref[] = path1[k].split("page");
-                System.out.println(ref[0]);
-                System.out.println(ref[1]);
-                int lastPage = new Integer(ref[1]);
-
-            }
-        }
-
+        final String GITHUB_API_URL = "https://api.github.com/users/{owner}/repos?per_page=10&page={page}";
         return restTemplate.getForObject(GITHUB_API_URL, String.class, owner, page);
     }
 
     @Nullable
-    public int countRepo(String owner) throws JsonProcessingException {
+    public int countRepo(String owner) throws JsonProcessingException
+    {
         final String GITHUB_API_URL_ACCOUNT = "https://api.github.com/users/{owner}";
         JsonNode node = mapper.readTree(restTemplate.getForObject(GITHUB_API_URL_ACCOUNT,String.class, owner));
         return node.get("public_repos").intValue();
     }
 
-    public int pageCount(String pageFlag){
-        int pageNumber=1, page=10, lastPage=0;
+    public int pagePagination(String owner)
+    {
+        int lastPage=0;
+        final String GITHUB_API_URL_PAGE = "https://api.github.com/users/{owner}/repos?per_page=10";
 
-        while (!pageFlag.contains("last")){
-            System.out.println(pageFlag);
-            pageNumber++;
-            System.out.println(pageNumber);
+        ResponseEntity<JsonNode> responseEntity = restTemplate.getForEntity(GITHUB_API_URL_PAGE, JsonNode.class, owner);
+        HttpHeaders headers = responseEntity.getHeaders();
+        String rel = headers.getFirst("Link");
+        String[] path1 = rel.split(",");
+
+        for(int k=0; k<path1.length; k++){
+            if(path1[k].contains("last")){
+                Pattern pattern = Pattern.compile("[^\\d]*[\\d]+[^\\d]*[\\d]+[^\\d]+([\\d])");
+                Matcher matcher = pattern.matcher(path1[k]);
+
+                while (matcher.find()){
+                    lastPage = Integer.parseInt(matcher.group(1));
+                }
+            }
         }
 
-        return pageNumber;
+        return lastPage;
     }
 
 
