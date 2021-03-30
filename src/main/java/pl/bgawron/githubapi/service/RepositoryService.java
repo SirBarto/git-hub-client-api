@@ -13,98 +13,55 @@ import pl.bgawron.githubapi.model.Repository;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Service
 public class RepositoryService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    private final List<Repository> repositoryList = new ArrayList<>();
-
     private final ObjectMapper mapper = new ObjectMapper();
+
+    private final RepositoryList repositoryList = new RepositoryList();
 
     int pageNumber=1, page=1;
 
     public List<Repository> getAllRepoByUser(String owner, String sort) throws JsonProcessingException
     {
-        page= pagePagination(owner);
-        repositoryList.clear();
-
-        while(pageNumber<=page)
-        {
-            JsonNode node = mapper.readTree(gitHubEndPoint(owner,pageNumber));
-
-            for (JsonNode json : node)
-            {
-                if (json.get("private").asText().equals("false"))
-                {
-                    repositoryList.add(
-                            new Repository(
-                                    json.get("full_name").asText(),
-                                    json.get("description").asText(),
-                                    json.get("clone_url").asText(),
-                                    json.get("stargazers_count").asInt(),
-                                    json.get("watchers_count").asInt(),
-                                    json.get("created_at").asText()
-                            )
-                    );
-                }
-            }
-
-            pageNumber++;
-        }
-
         try {
-            String sortParameter;
-            String typeSort;
 
-            if (sort.contains(","))
+            page= pagePagination(owner);
+            repositoryList.clearList();
+
+            while(pageNumber<=page)
             {
-                if (sort.contains("asc") || sort.contains("desc"))
+                JsonNode node = mapper.readTree(gitHubEndPoint(owner,pageNumber));
+
+                for (JsonNode json : node)
                 {
-                    String[] path = sort.split(",");
-                    sortParameter = path[0];
-                    typeSort = path[1];
-                } else {
-                    sortParameter = "";
-                    typeSort = "";
+                    if (json.get("private").asText().equals("false"))
+                    {
+                        repositoryList.addToList(
+                                json.get("full_name").asText(),
+                                json.get("description").asText(),
+                                json.get("clone_url").asText(),
+                                json.get("stargazers_count").asInt(),
+                                json.get("watchers_count").asInt(),
+                                json.get("created_at").asText()
+                        );
+                    }
                 }
-            }else {
-                sortParameter = "";
-                typeSort = "";
+                pageNumber++;
             }
 
-            switch (sortParameter)
-            {
-                case "stars":
-                    if (typeSort.equals("asc"))
-                    {
-                        List<Repository> listSort = repositoryList.stream()
-                                .sorted(Comparator.comparingInt(Repository::getStars))
-                                .collect(Collectors.toList());
-                        return listSort;
-                    } else if (typeSort.equals("desc"))
-                    {
-                        List<Repository> listSort2 = repositoryList.stream()
-                                .sorted(Comparator.comparingInt(Repository::getStars).reversed())
-                                .collect(Collectors.toList());
-                        return listSort2;
-                    }
-                    break;
-                case "createdAt":
-                case "full_name":
-                    return null;
-            }
         } catch (HttpClientErrorException e)
         {
             ResponseEntity.badRequest().body(e.getStatusCode());
             System.out.println(e.getStatusCode());
         }
 
-        return repositoryList;
+        return repositoryList.displayList(sort);
     }
-
+    
     @Nullable
     private String gitHubEndPoint(String owner, int page)
     {
