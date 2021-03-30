@@ -10,6 +10,9 @@ import pl.bgawron.githubapi.model.Repository;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+
+import static jdk.nashorn.internal.objects.NativeMath.log;
 
 @RestController
 @RequestMapping("/repositories")
@@ -32,9 +35,10 @@ public class RepositoryApi {
            if(list.isEmpty()){
                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
            }else {
-               return ResponseEntity.status(HttpStatus.OK).body(list);//ok(list);
+               return ResponseEntity.status(HttpStatus.OK).body(list);
            }
        }catch (HttpClientErrorException e){
+           log(Level.INFO,e.getStatusCode());
            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
        }
     }

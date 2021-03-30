@@ -8,6 +8,9 @@ import pl.bgawron.githubapi.model.Repository;
 import pl.bgawron.githubapi.service.RepositoryServiceLogic.GetRepositoryFromGitHubApi;
 
 import java.util.*;
+import java.util.logging.Level;
+
+import static jdk.nashorn.internal.objects.NativeMath.log;
 
 @Service
 public class RepositoryService extends GetRepositoryFromGitHubApi {
@@ -19,7 +22,7 @@ public class RepositoryService extends GetRepositoryFromGitHubApi {
         } catch (HttpClientErrorException e)
         {
             ResponseEntity.badRequest().body(e.getStatusCode());
-            System.out.println(e.getStatusCode());
+            log(Level.INFO,e.getStatusCode());
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

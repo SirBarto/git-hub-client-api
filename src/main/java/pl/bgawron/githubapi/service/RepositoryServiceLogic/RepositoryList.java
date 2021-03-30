@@ -9,7 +9,7 @@ public class RepositoryList extends RepositorySort{
 
     private final List<Repository> repositoryList = new ArrayList<>();
 
-    public void addToList(String fullName, String description, String cloneUrl, int stars, int watchers, String createdAt)
+    protected void addToList(String fullName, String description, String cloneUrl, int stars, int watchers, String createdAt)
     {
         repositoryList.add(new Repository(
                 fullName,description,
@@ -18,13 +18,13 @@ public class RepositoryList extends RepositorySort{
         );
     }
 
-    public void clearList()
+    protected void clearList()
     {
         if(!repositoryList.isEmpty())
             repositoryList.clear();
     }
 
-    List<Repository> displayList(String sortParameter)
+    protected List<Repository> displayList(String sortParameter)
     {
         return getListToSort(sortParameter,repositoryList);
     }
