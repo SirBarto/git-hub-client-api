@@ -1,4 +1,4 @@
-package pl.bgawron.githubapi.service;
+package pl.bgawron.githubapi.service.RepositoryServiceLogic;
 
 import pl.bgawron.githubapi.model.Repository;
 
