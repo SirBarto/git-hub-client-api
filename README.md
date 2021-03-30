@@ -35,9 +35,15 @@ Example:
 ]
 ```
 -------------
+ChangeLog
+
+//2021-03-30
+Created pagePagination method to count number of fetched page in JSON from GitHubApi.
+Moved method from RepositoryService class to other classes with single responsibility.
+
+-------------
 Futher issue list
 
 - add aut account to upper limit request result
 - perform next test for searchnig parameter and sorter
-- change page_count method
 
