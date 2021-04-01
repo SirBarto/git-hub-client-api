@@ -3,6 +3,7 @@ package pl.bgawron.githubapi.service.RepositoryServiceLogic;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -15,7 +16,8 @@ import java.util.regex.Pattern;
 
 public abstract class GetRepositoryFromGitHubApi {
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    private AccessToGitHubApiEndPoint accessToGitHubApiEndPoint;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -57,24 +59,22 @@ public abstract class GetRepositoryFromGitHubApi {
     @Nullable
     private String gitHubEndPoint(String owner, int page)
     {
-        final String GITHUB_API_URL = "https://api.github.com/users/{owner}/repos?per_page=10&page={page}";
-        return restTemplate.getForObject(GITHUB_API_URL, String.class, owner, page);
+        return accessToGitHubApiEndPoint.resultGitHubEndPoint(owner,page);
     }
 
     @Nullable
     public int countRepo(String owner) throws JsonProcessingException
     {
-        final String GITHUB_API_URL_ACCOUNT = "https://api.github.com/users/{owner}";
-        JsonNode node = mapper.readTree(restTemplate.getForObject(GITHUB_API_URL_ACCOUNT,String.class, owner));
+        JsonNode node = mapper.readTree(accessToGitHubApiEndPoint.resultCountRepo(owner));
         return node.get("public_repos").intValue();
     }
 
     private int pagePagination(String owner)
     {
         int lastPage=0;
-        final String GITHUB_API_URL_PAGE = "https://api.github.com/users/{owner}/repos?per_page=10";
 
-        ResponseEntity<JsonNode> responseEntity = restTemplate.getForEntity(GITHUB_API_URL_PAGE, JsonNode.class, owner);
+        ResponseEntity<JsonNode> responseEntity = accessToGitHubApiEndPoint.resultPagePagination(owner);
+
         HttpHeaders headers = responseEntity.getHeaders();
         String rel = headers.getFirst("Link");
         assert rel != null;
