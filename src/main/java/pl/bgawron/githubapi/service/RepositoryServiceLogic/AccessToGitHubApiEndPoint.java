@@ -14,9 +14,6 @@ public final class AccessToGitHubApiEndPoint {
 
     private final String baseUrl;
 
-    final static String GITHUB_API_URL = "https://api.github.com/users/{owner}/repos?per_page=10&page={page}";
-    final static String GITHUB_API_URL_PAGE = "https://api.github.com/users/{owner}/repos?per_page=10";
-
     @Autowired
     public AccessToGitHubApiEndPoint(RestTemplateConfiguration restTemplate, @Value("${service.url}") String baseUrl)
     {
@@ -26,17 +23,17 @@ public final class AccessToGitHubApiEndPoint {
 
     public final String resultGitHubEndPoint(String owner, int page)
     {
-        return restTemplate.restTemplate().getForObject(GITHUB_API_URL,String.class,owner,page);
+        return restTemplate.restTemplate().getForObject(baseUrl+"/{owner}/repos?per_page=10&page={page}",String.class,owner,page);
     }
 
     public final String resultCountRepo(String owner)
     {
-        return restTemplate.restTemplate().getForObject(baseUrl,String.class,owner);
+        return restTemplate.restTemplate().getForObject(baseUrl+"/{owner}",String.class,owner);
     }
 
     public final ResponseEntity<JsonNode> resultPagePagination(String owner)
     {
-        return restTemplate.restTemplate().getForEntity(GITHUB_API_URL_PAGE, JsonNode.class,owner);
+        return restTemplate.restTemplate().getForEntity(baseUrl+"/{owner}/repos?per_page=10",JsonNode.class,owner);
     }
 
 }

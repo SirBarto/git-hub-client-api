@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 import pl.bgawron.githubapi.model.Repository;
 
 import java.util.List;
@@ -19,19 +19,34 @@ public abstract class GetRepositoryFromGitHubApi {
     @Autowired
     private AccessToGitHubApiEndPoint accessToGitHubApiEndPoint;
 
+    @Autowired
+    private GitHubURLConnection gitHubURLConnection;
+
     private final ObjectMapper mapper = new ObjectMapper();
 
     private final RepositoryList repositoryList = new RepositoryList();
 
     int pageNumber=1, page=1;
 
-    protected void getFetchedDataFromGitHubAPi(String owner) throws JsonProcessingException
-    {
-        page= pagePagination(owner);
+    protected void getFetchedDataFromGitHubAPi(String owner) throws JsonProcessingException, ResponseStatusException {
+        page = pagePagination(owner);
         repositoryList.clearList();
 
         while(pageNumber<=page)
         {
+           // List<String> a = getPublicUserRepositories("hasherezade",pageNumber);
+            //to wyzej do mapy powinno isc
+            //a ArrayList / LinkedHashMap
+           // System.out.println(a);
+
+             
+
+
+
+
+
+
+
             JsonNode node = mapper.readTree(gitHubEndPoint(owner,pageNumber));
 
             for (JsonNode json : node)
@@ -48,6 +63,8 @@ public abstract class GetRepositoryFromGitHubApi {
                     );
                 }
             }
+
+
             pageNumber++;
         }
     }
@@ -60,6 +77,11 @@ public abstract class GetRepositoryFromGitHubApi {
     private String gitHubEndPoint(String owner, int page)
     {
         return accessToGitHubApiEndPoint.resultGitHubEndPoint(owner,page);
+    }
+
+    private List<String> getPublicUserRepositories(String owner, int page)
+    {
+        return gitHubURLConnection.webClientResultGitHubEndPoint(owner, page);
     }
 
     @Nullable

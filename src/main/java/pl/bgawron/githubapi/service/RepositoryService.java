@@ -15,7 +15,7 @@ import static jdk.nashorn.internal.objects.NativeMath.log;
 @Service
 public class RepositoryService extends GetRepositoryFromGitHubApi {
 
-    public List<Repository> getAllRepoByUser(String owner, String sort)
+    public List<Repository> getAllPublicRepositoriesByUser(String owner, String sort)
     {
         try {
            getFetchedDataFromGitHubAPi(owner);

@@ -31,7 +31,7 @@ public class RepositoryApi {
                                                       @RequestParam(value = "sort", required = false, defaultValue = "stars,asc") String sort
                                                       ) throws IOException {
        try {
-           List<Repository> list = repositoryService.getAllRepoByUser(owner,sort);
+           List<Repository> list = repositoryService.getAllPublicRepositoriesByUser(owner,sort);
            if(list.isEmpty()){
                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
            }else {
