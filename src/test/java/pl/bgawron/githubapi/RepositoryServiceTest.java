@@ -36,7 +36,7 @@ class RepositoryServiceTest {
         list.add(new Repository("user/repo1","test","",10,0,"20210311"));
         list.add(new Repository("user/repo2","test","",20,0,"20210311"));
         list.add(new Repository("superuser/repo3","test","",25,0,"20210311"));
-        when(repositoryService.getAllRepoByUser("user","")).thenReturn(list);
+        when(repositoryService.getAllPublicRepositoriesByUser("user","")).thenReturn(list);
     }
 
     @Test
@@ -61,10 +61,10 @@ class RepositoryServiceTest {
         String[] userName = {"octocat","hasherezade","SirBarto","dszmaj7"};
 
         //when
-        List<Repository> repositoryList0 = new ArrayList<>(repositoryService.getAllRepoByUser(userName[0],""));
-        List<Repository> repositoryList1 = new ArrayList<>(repositoryService.getAllRepoByUser(userName[1],""));
-        List<Repository> repositoryList2 = new ArrayList<>(repositoryService.getAllRepoByUser(userName[2],""));
-        List<Repository> repositoryList3 = new ArrayList<>(repositoryService.getAllRepoByUser(userName[3],""));
+        List<Repository> repositoryList0 = new ArrayList<>(repositoryService.getAllPublicRepositoriesByUser(userName[0],""));
+        List<Repository> repositoryList1 = new ArrayList<>(repositoryService.getAllPublicRepositoriesByUser(userName[1],""));
+        List<Repository> repositoryList2 = new ArrayList<>(repositoryService.getAllPublicRepositoriesByUser(userName[2],""));
+        List<Repository> repositoryList3 = new ArrayList<>(repositoryService.getAllPublicRepositoriesByUser(userName[3],""));
 
         int a = repositoryService.
                 countRepo(userName[0]);
